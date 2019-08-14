@@ -50,7 +50,7 @@ object Main {
 
       override def showUsageOnError: Boolean = true
 
-      opt[Unit]('V', "version") text ("print version and quit") action { (_, c) =>
+      opt[Unit]('V', "version").text("print version and quit").action { (_, c) =>
         println("scrooge linter " + buildProperties.getProperty("version", "0.0"))
         println("    build " + buildProperties.getProperty("build_name", "unknown"))
         println("    git revision " + buildProperties.getProperty("build_revision", "unknown"))
@@ -58,18 +58,18 @@ object Main {
         c
       }
 
-      opt[Unit]('v', "verbose") action { (_, c) =>
+      opt[Unit]('v', "verbose").action{ (_, c) =>
         c.copy(verbose = true)
       } text ("log verbose messages about progress")
 
-      opt[Unit]('i', "ignore-errors") text ("return 0 if linter errors are found. If not set, linter returns 1.") action {
+      opt[Unit]('i', "ignore-errors").text("return 0 if linter errors are found. If not set, linter returns 1.").action {
         (_, c) =>
           c.copy(ignoreErrors = true)
       }
 
-      opt[String]('n', "include-path") unbounded () valueName ("<path>") action { (path, c) =>
+      opt[String]('n', "include-path").unbounded().valueName("<path>").action { (path, c) =>
         c.copy(includePaths = c.includePaths ++ path.split(File.pathSeparator))
-      } text ("path(s) to search for included thrift files (may be used multiple times)")
+      }.text ("path(s) to search for included thrift files (may be used multiple times)")
 
       def findRule(ruleName: String) =
         LintRule.Rules
@@ -83,41 +83,41 @@ object Main {
 
       def ruleList(rules: Seq[LintRule]) = rules.map(_.name).mkString(", ")
 
-      opt[String]('e', "enable-rule") unbounded () valueName ("<rule-name>") action {
+      opt[String]('e', "enable-rule").unbounded().valueName("<rule-name>").action {
         (ruleName, c) =>
           {
             val rule = findRule(ruleName);
             if (c.enabledRules.contains(rule)) c else c.copy(enabledRules = c.enabledRules :+ rule)
           }
-      } text (s"rules to be enabled.\n  Available: ${ruleList(LintRule.Rules)}\n  Default: ${ruleList(
+      }.text (s"rules to be enabled.\n  Available: ${ruleList(LintRule.Rules)}\n  Default: ${ruleList(
         LintRule.DefaultRules)}")
 
-      opt[String]('d', "disable-rule") unbounded () valueName ("<rule-name>") action {
+      opt[String]('d', "disable-rule").unbounded().valueName("<rule-name>").action {
         (ruleName, c) =>
           {
             c.copy(enabledRules = c.enabledRules.filter(_ != findRule(ruleName)))
           }
-      } text ("rules to be disabled.")
+      }.text("rules to be disabled.")
 
-      opt[Unit]('p', "ignore-parse-errors") text ("continue if parsing errors are found.") action {
+      opt[Unit]('p', "ignore-parse-errors").text("continue if parsing errors are found.").action {
         (_, c) =>
           c.copy(ignoreParseErrors = true)
       }
 
-      opt[Unit]('w', "warnings") text ("show linter warnings (default = False)") action { (_, c) =>
+      opt[Unit]('w', "warnings").text("show linter warnings (default = False)").action { (_, c) =>
         c.copy(showWarnings = true)
       }
 
-      opt[Unit]("disable-strict") text ("issue warnings on non-severe parse errors instead of aborting") action {
+      opt[Unit]("disable-strict").text("issue warnings on non-severe parse errors instead of aborting").action {
         (_, c) =>
           c.copy(strict = false)
       }
 
-      opt[Unit]("fatal-warnings") text ("convert warnings to errors") action { (_, c) =>
+      opt[Unit]("fatal-warnings").text("convert warnings to errors").action { (_, c) =>
         c.copy(fatalWarnings = true)
       }
 
-      arg[String]("<files...>") unbounded () text ("thrift files to compile") action { (input, c) =>
+      arg[String]("<files...>").unbounded().text ("thrift files to compile").action { (input, c) =>
         c.copy(files = c.files :+ input)
       }
     }
